@@ -44,7 +44,6 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
    create_project project_1 myproj -part xc7z020clg400-1
-   set_property BOARD_PART digilentinc.com:arty-z7-20:part0:1.1 [current_project]
 }
 
 
@@ -200,9 +199,9 @@ proc create_root_design { parentCell } {
    CONFIG.ADDR_WIDTH {32} \
    CONFIG.DATA_WIDTH {32} \
    CONFIG.HAS_REGION {0} \
-   CONFIG.NUM_READ_OUTSTANDING {8} \
-   CONFIG.NUM_WRITE_OUTSTANDING {8} \
-   CONFIG.PROTOCOL {AXI3} \
+   CONFIG.NUM_READ_OUTSTANDING {4} \
+   CONFIG.NUM_WRITE_OUTSTANDING {4} \
+   CONFIG.PROTOCOL {AXI4} \
    ] $USER_AXI
 
 
@@ -210,7 +209,6 @@ proc create_root_design { parentCell } {
   set AXI_CLK [ create_bd_port -dir O -type clk AXI_CLK ]
   set_property -dict [ list \
    CONFIG.ASSOCIATED_BUSIF {USER_AXI} \
-   CONFIG.ASSOCIATED_RESET {} \
  ] $AXI_CLK
   set AXI_RSTN [ create_bd_port -dir O -from 0 -to 0 -type rst AXI_RSTN ]
   set peripheral_reset_0 [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_reset_0 ]
@@ -785,7 +783,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net rst_ps7_0_100M_peripheral_reset [get_bd_pins rst_ps7_0_100M/peripheral_reset] [get_bd_ports peripheral_reset_0]
 
   # Create address segments
-  assign_bd_address -offset 0x40000000 -range 0x00008000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs USER_AXI/Reg] -force
+  assign_bd_address -offset 0x40000000 -range 0x02000000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs USER_AXI/Reg] -force
   assign_bd_address -offset 0x42000000 -range 0x00008000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
 
 

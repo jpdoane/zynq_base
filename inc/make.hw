@@ -23,6 +23,8 @@ MEM_TCL=$(SCRIPTS)/mem.tcl
 BITFILE_TCL=$(SCRIPTS)/bitfile.tcl
 DEBUG_TCL=$(SCRIPTS)/debug.tcl
 PROGRAM_TCL=$(SCRIPTS)/program.tcl
+DEBUG_HW_TCL=$(SCRIPTS)/debug_hw.tcl
+
 
 default: bitfile
 
@@ -103,7 +105,7 @@ $(IMPL_ENV): $(BUILD_ENV) $(IMPL_TCL) $(BITFILE_TCL) $(PROGRAM_TCL) $(DEBUG_NETS
 
 $(IMPL): $(IMPL_ENV) $(SYNTH)
 	cd $(IMPL_PATH) && \
-	$(VIVADO) -source $(IMPL_TCL) -tclargs $(TOP) $(DEVICE) $(SYNTH) $(BUILD_PATH)\
+	$(VIVADO) -source $(IMPL_TCL) -tclargs $(TOP) $(DEVICE) $(SYNTH) $(BUILD_PATH) $(DEBUG_NETS_FILE)\
 	|| $(call FAIL, IMPLEMENTATION, true)
 	$(call SUCCEED, IMPLEMENTATION, true)
 
@@ -117,10 +119,13 @@ mem: $(IMPL_ENV) $(IMPL)
 vivado: $(SYNTH)
 	cd $(BUILD_PATH) && vivado -source make_proj.tcl &
 
-
 # bitfile
 BITFILE=$(IMPL_PATH)/$(TOP).bit
 bitfile: $(BITFILE)
+
+PROBE_FILE=$(IMPL_PATH)/$(TOP).ltx
+debug: $(BITFILE)
+	cd $(IMPL_PATH) && vivado -source $(DEBUG_HW_TCL) -tclargs $(DEVICE_SHORT) $(PROBE_FILE) &
 
 $(BITFILE):	$(IMPL) $(BITFILE_PATH)
 	cd $(IMPL_PATH) && \

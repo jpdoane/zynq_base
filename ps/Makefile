@@ -1,6 +1,6 @@
 include ../inc/make.inc
 
-XSA=../pl/build/impl/example_top.xsa
+XSA=../pl/build/impl/sdram_top.xsa
 SOURCE = $(wildcard src/*.c) $(wildcard src/*.cpp)
 
 

@@ -1,12 +1,13 @@
 # Check if the correct number of arguments is provided
 if {[llength $argv] < 4} {
-    puts "Usage: tclsh impl.tcl <top_module> <device> <synth_dcp> <proj_path>"
+    puts "Usage: tclsh impl.tcl <top_module> <device> <synth_dcp> <proj_path> [debug_nets_file]"
     exit 1
 }
 set TOPMODULE [lindex $argv 0]
 set DEVICE [lindex $argv 1]
 set SYNTH_DCP [lindex $argv 2]
 set PROJ [lindex $argv 3]
+
 
 
 proc create_report { reportName command } {
@@ -103,7 +104,12 @@ if {$rc} {
   unset ACTIVE_STEP 
 }
 
-source "${PROJ}/debug.tcl"
+
+if {[llength $argv] >= 5} {
+  set DEBUG_NETS_FILE [lindex $argv 4]
+  source "${PROJ}/debug.tcl"
+}
+
 
 start_step opt_design
 set ACTIVE_STEP opt_design
